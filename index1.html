@@ -1,0 +1,73 @@
+<html>
+	<head>
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { display: block; }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+		<script>
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+
+			var renderer = new THREE.WebGLRenderer({ antialias: true });
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+			
+			var texture = new THREE.TextureLoader().load( './texture/crate.gif' );
+
+			var geometry = new THREE.BoxGeometry();
+			//var material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+			//var geometry = new THREE.BoxBufferGeometry( 200, 200, 200 );
+			var material = new THREE.MeshBasicMaterial( { map: texture });
+			var cube = new THREE.Mesh( geometry, material );
+			scene.add( cube );
+			
+			var geometry2 = new THREE.SphereGeometry( );
+			var material2 = new THREE.MeshBasicMaterial( {color: 0xff00ff} );
+			var sphere = new THREE.Mesh( geometry2, material2 );
+			
+					
+			scene.add( sphere );			
+			
+			camera.position.z = 5;
+			
+			var direction = 1;
+			var directionZ = 1;
+
+			var animate = function () {
+				requestAnimationFrame( animate );
+
+				cube.rotation.x += 0.01;
+				cube.rotation.y += 0.01;
+				
+				sphere.rotation.x += 0.01;
+				sphere.rotation.y += 0.01;				
+				
+				if(sphere.position.y >= 2 || sphere.position.y <= -2)
+					direction = (direction * -1);
+					
+				if(sphere.position.z >= 2 || sphere.position.z <= -2)
+					directionZ = (directionZ * -1);					
+				
+				if(direction >= 1)
+					sphere.position.y += 0.01;
+				else
+					sphere.position.y -= 0.01;
+					
+				if(directionZ >= 1)
+					sphere.position.z += 0.01;
+				else
+					sphere.position.z -= 0.01;					
+				
+				console.log(sphere.position.y);
+
+				renderer.render( scene, camera );
+			};
+
+			animate();
+		</script>
+	</body>
+</html>

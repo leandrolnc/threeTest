@@ -8,58 +8,69 @@
 	</head>
 	<body>
 		<script src="js/three.js"></script>
-		<script>
+		<script type="module">
+		
 			var scene = new THREE.Scene();
 			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
 
-			var renderer = new THREE.WebGLRenderer();
+			var renderer = new THREE.WebGLRenderer({ antialias: true });
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
+			
+			var texture = new THREE.TextureLoader().load( './texture/2k_earth_daymap.jpg' );
+			var material = new THREE.MeshBasicMaterial( { map: texture });
+			
+			var gEarth = new THREE.SphereGeometry(1, 32, 24 );
+			//var material2 = new THREE.MeshBasicMaterial( {color: 0xff00ff} );
+			var objEarth = new THREE.Mesh( gEarth, material );
+			
+			var gOrbitMoon = new THREE.CircleGeometry( 2, 32 );
+			gOrbitMoon.vertices.shift();
+			var materialLine = new THREE.LineBasicMaterial( { color: 0xffff00 } );
+			var circle = new THREE.Mesh( gOrbitMoon, materialLine );	
 
-			var geometry = new THREE.BoxGeometry();
-			var material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
-			var cube = new THREE.Mesh( geometry, material );
-			scene.add( cube );
+			var tMoon = new THREE.TextureLoader().load( './texture/2k_moon.jpg' );
+			var gMoon = new THREE.SphereGeometry(0.2, 16, 12 );
+			var materialMoon = new THREE.MeshBasicMaterial( { map: tMoon } );
+			var objMoon = new THREE.Mesh( gMoon, materialMoon );
 			
-			var geometry2 = new THREE.SphereGeometry( );
-			var material2 = new THREE.MeshBasicMaterial( {color: 0xff00ff} );
-			var sphere = new THREE.Mesh( geometry2, material2 );
+			var materialAtmosphere = new THREE.MeshBasicMaterial( {color: 0xffffff} );
+			var gAtmosphere = new THREE.SphereGeometry(1.08, 32, 24 );
+			var objAtmosphere = new THREE.Mesh( gAtmosphere, materialAtmosphere );
+			materialAtmosphere.transparent = true;
+			materialAtmosphere.opacity = 0.05;
+
+			objMoon.position.x = 2;			
 			
-			scene.add( sphere );			
+			scene.add( objEarth );
+			scene.add( objMoon );
+			scene.add( objAtmosphere );
+			
+			
+			//scene.add( circle );
+			
+			scene.add( new THREE.Line( gOrbitMoon, material ) );
 			
 			camera.position.z = 5;
 			
+			var r = 2;
+			var theta = 0;
+			var dTheta = 2 * Math.PI / 1000;			
+			
 			var direction = 1;
 			var directionZ = 1;
-
+			
 			var animate = function () {
 				requestAnimationFrame( animate );
 
-				cube.rotation.x += 0.01;
-				cube.rotation.y += 0.01;
+				objEarth.rotation.y -= 0.005;
 				
-				sphere.rotation.x += 0.01;
-				sphere.rotation.y += 0.01;				
+				theta += dTheta;
+			    objMoon.position.x = r * Math.cos(theta);
+			    objMoon.position.z = r * Math.sin(theta);				
 				
-				if(sphere.position.y >= 2 || sphere.position.y <= -2)
-					direction = (direction * -1);
-					
-				if(sphere.position.z >= 2 || sphere.position.z <= -2)
-					directionZ = (directionZ * -1);					
-				
-				if(direction >= 1)
-					sphere.position.y += 0.01;
-				else
-					sphere.position.y -= 0.01;
-					
-				if(directionZ >= 1)
-					sphere.position.z += 0.01;
-				else
-					sphere.position.z -= 0.01;					
-				
-				console.log(sphere.position.y);
-
 				renderer.render( scene, camera );
+				
 			};
 
 			animate();
