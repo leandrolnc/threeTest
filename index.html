@@ -21,7 +21,6 @@
 			var material = new THREE.MeshBasicMaterial( { map: texture });
 			
 			var gEarth = new THREE.SphereGeometry(1, 32, 24 );
-			//var material2 = new THREE.MeshBasicMaterial( {color: 0xff00ff} );
 			var objEarth = new THREE.Mesh( gEarth, material );
 			
 			var gOrbitMoon = new THREE.CircleGeometry( 2, 32 );
@@ -33,23 +32,39 @@
 			var gMoon = new THREE.SphereGeometry(0.2, 16, 12 );
 			var materialMoon = new THREE.MeshBasicMaterial( { map: tMoon } );
 			var objMoon = new THREE.Mesh( gMoon, materialMoon );
+			objMoon.position.x = 2;
 			
 			var materialAtmosphere = new THREE.MeshBasicMaterial( {color: 0xffffff} );
 			var gAtmosphere = new THREE.SphereGeometry(1.08, 32, 24 );
 			var objAtmosphere = new THREE.Mesh( gAtmosphere, materialAtmosphere );
 			materialAtmosphere.transparent = true;
 			materialAtmosphere.opacity = 0.05;
-
-			objMoon.position.x = 2;			
+						
+			var tMars = new THREE.TextureLoader().load( './texture/2k_mars.jpg' );
+			var materialMars = new THREE.MeshBasicMaterial( { map: tMars });
+			var gMars = new THREE.SphereGeometry(1, 32, 32 );
+			var objMars = new THREE.Mesh( gMars, materialMars );
+			objMars.position.x = -4;
+			objMars.position.z = -4;
+			
+			var tJupiter = new THREE.TextureLoader().load( './texture/2k_jupiter.jpg' );
+			var mJupiter = new THREE.MeshBasicMaterial( { map: tJupiter });
+			var gJupiter = new THREE.SphereGeometry(4, 32, 32 );
+			var objJupiter = new THREE.Mesh( gJupiter, mJupiter );
+			objJupiter.position.x = 3;
+			objJupiter.position.z = -6;
+						
 			
 			scene.add( objEarth );
 			scene.add( objMoon );
 			scene.add( objAtmosphere );
+			scene.add( objMars );
+			scene.add( objJupiter );
 			
 			
 			//scene.add( circle );
 			
-			scene.add( new THREE.Line( gOrbitMoon, material ) );
+			//scene.add( new THREE.Line( gOrbitMoon, material ) );
 			
 			camera.position.z = 5;
 			
@@ -64,13 +79,19 @@
 				requestAnimationFrame( animate );
 
 				objEarth.rotation.y -= 0.005;
+				objMars.rotation.y -= 0.005;
+				objJupiter.rotation.y -= 0.005;
 				
 				theta += dTheta;
 			    objMoon.position.x = r * Math.cos(theta);
 			    objMoon.position.z = r * Math.sin(theta);				
 				
-				renderer.render( scene, camera );
+				camera.fov -= 0.090;
 				
+				camera.updateProjectionMatrix();
+				
+				renderer.render( scene, camera );
+
 			};
 
 			animate();
